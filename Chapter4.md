@@ -1,6 +1,6 @@
 How to provide the illusion of many CPUs?
 - Virtualizing the CPU: by running a process and then stopping it and then running another one, it provides the illusion that many virtual CPU's coexist when in reality there are only a physical one
-This technique is called time-sharing
+This technique is called time-sharing,, the reason why we need to do is because the CPU can only execute 1 thread per core 
 
 Process API which is available in every operating systems.
 
