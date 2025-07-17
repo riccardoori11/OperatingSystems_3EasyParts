@@ -28,3 +28,22 @@ The Next problem is switching between processes. If a process is unning on the C
 - setting up timer interrupt so that it interrupts every millisecond and gives the OS a bit of time to maintain control.
 
 After the timer, the decision to continue the process or switch has to be made. This part is done by the scheduler. If the shceduler decides to switch, the OS performs low-level instructions we refer to as a context switch.
+
+
+
+What are the two modes of execution a CPU should support?
+- User mode and a privileged kernel mode
+
+To use a syscall you must trap into the kernel
+
+The trap instruction a hardware level instruction which switches from user mode to kernel mode.
+It saves the register state carefully and jumps into the OS in a destination called the trap table.
+
+after the syscall is finished another low level mechanism instruction called the return from trap instruction reduces the privilege and returns control to the instruction after the trap
+that jumped into the OS 
+
+
+limited direct execution protocol
+
+
+How does the OS baby proof the CPU ?

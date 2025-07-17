@@ -1,0 +1,30 @@
+what happens when a program runs?
+- fetch instruction from memory
+- decodes instruction
+- executes instruction
+
+
+What is virtualization?
+transforming the hardware into more general virtual forms of itself.
+
+What are APIs ?
+interfcaes the OS calls to allow users to interact more freely with the fetures of the VM
+
+The standard library is the exogenous system calls provided by the OS to the applications
+
+OS got its name as a ressource manager by allowing many programs to run on the same CPU whilst concurrently accessing their own instruction and data and accessing their own devices
+
+Virtualizing the CPU? How is it that one CPU is able to allow multiple programs to run together
+
+If two processes wants to run at the same time, how does the OS determine who runs
+
+What is memory?
+Memory is just an array of bytes
+
+what must be accessed to read and write memory?
+the data must be specified
+
+Describe a process in which the OS would virtualize its memory
+Each program acess its own address space which the OS maps onto the physical memory of the machine
+
+

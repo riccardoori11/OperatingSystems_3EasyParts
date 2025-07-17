@@ -16,3 +16,37 @@ A process can either be running , ready, blocked
 
 
 Operating Systems are filled with various important data structures, an example of this would be the process list which keeps track of all the running programs in the systems.
+
+
+
+
+
+Virtualziing the CPU entails giving the illusion of many CPU existing
+
+What tis time and space sharing?
+
+What are scheduling policiies?
+
+What are registers?
+
+What is the program counter?
+
+What is the low-level mechanism
+
+A program is a file on disk. The OS loads it into memory, creating a process. The CPU runs this process by executing instructions from the memory copy not the disk.
+
+What is the stack used for ?
+
+Whta is the heap used for?
+
+What are the 3 default file descriptors of a process?
+
+What are the different states a process can be?
+Running, ready and blocked
+
+Map these states onto a graph
+
+When do processes get blocked?
+
+What is the process list DS?
+

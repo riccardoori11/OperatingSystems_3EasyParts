@@ -7,3 +7,16 @@ The PID is known as the process identifier
 Since they are 2 active running processes, the ouput isnt always deterministic thus to we can then invoe the wait() which will wait for the child to finish it's process first. (assuming that the wait is inside block for the parent )
 
 
+
+
+What is the PID
+
+What syscall would we use to create a new process
+
+What syscall would we use to wait for a child to finish executing and resume the parent process
+
+What is the exec()
+
+What are signals ?
+
+
