@@ -1,0 +1,25 @@
+What is the virtual memory system responsible for?
+
+What is the era of multiprogramming?
+
+What does the address space contain?
+
+What does the stack keep track of?
+
+What about the heap?
+
+Why is code placed at the top of the address space
+
+How can the OS build this abstraction of a private, potentially large address space for multiple running processes (all sharing memory) on top of a single, physical memory?
+
+What do we mean by the OS virtualizing memory?
+
+What is transparency ?
+
+Why is isolating between processes important
+
+
+
+
+
+

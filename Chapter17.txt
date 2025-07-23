@@ -1,0 +1,125 @@
+How should free space be managed, when satisfying variable-sized requests? What strategies can be used to minimize fragmentation? What are the time and space overheads of alternate approaches?
+
+What does the free list contain ?
+
+Explain the concept of splitting
+
+Explain the mechanism of coalescion and what problem does it solve
+
+what chunk of memory is the library looking for when a user requests a N bytes?
+
+
+
+
+
+Skeleton0: Memory Allocator (Dynamic Memory Management)
+
+Input:
+- Goal: Efficiently manage dynamic allocation and deallocation of memory during runtime
+- Constraints: 
+  → Memory requests are unpredictable in size and timing
+  → Limited physical memory
+  → Need to minimize waste and fragmentation
+  → Support multiple concurrent processes (with isolation and speed)
+
+Mechanism:
+→ Memory allocator receives requests (e.g., malloc(size)) from applications or kernel subsystems
+→ Searches for a suitable block of free memory to satisfy the request
+
+→ Core functions:
+   → Allocation (e.g., malloc)
+   → Deallocation (e.g., free)
+   → Reallocation (e.g., realloc)
+   → Initialization (e.g., calloc)
+
+→ Implementation strategies:
+   → **Free list**: track available memory blocks
+   → **Allocation policies**:
+      → First-fit: select first free block large enough
+      → Best-fit: select smallest sufficient free block (minimizes leftover space)
+      → Worst-fit: select largest available block (delays fragmentation)
+      → Buddy system: power-of-2 block management to speed up splitting/coalescing
+
+→ Metadata is stored alongside memory blocks:
+   → Size of block
+   → Allocation flag (used/free)
+   → Pointer to next block (linked list or segregated bins)
+
+→ Coalescing: merge adjacent free blocks during deallocation to combat fragmentation
+
+→ Splitting: divide a large block into a used part and a remaining free part
+
+→ Alignment: ensure returned addresses respect platform alignment constraints (e.g., 8-byte aligned)
+
+→ Kernel-level allocators use lower-level mechanisms (e.g., sbrk(), mmap(), page frame allocation)
+
+Output:
+- Returns pointer to allocated memory if successful
+- Updates internal structures (free list, block headers)
+- On deallocation, marks block as free and coalesces if possible
+
+Pathologies:
+→ **External fragmentation**: free space exists but in scattered chunks; large requests may fail despite total space being sufficient
+→ **Internal fragmentation**: allocated block is larger than requested due to alignment or size class constraints
+→ **Memory leaks**: allocated blocks never freed, reducing available memory over time
+→ **Dangling pointers**: using memory after it’s freed
+→ **Double free**: freeing memory twice leads to undefined behavior or exploitation
+→ **False coalescence**: improper detection of adjacent free blocks leads to memory corruption
+
+Summary Flow:
+App requests memory → allocator searches free list (policy-dependent) → finds block or extends heap → splits if needed → returns pointer → app uses → app frees → allocator coalesces and recycles → memory reused later
+
+
+
+
+Skeleton0: Slab Allocator (Kernel Object Memory Management)
+
+Input:
+- Goal: Fast, low-fragmentation allocation of small, frequently used kernel objects (e.g., file descriptors, inodes, locks)
+- Constraint: Objects are of fixed type and size, often reused; high allocation/deallocation frequency
+- Standard allocators (e.g., malloc) are too slow or cause fragmentation due to generic design
+
+Mechanism:
+→ **Segregated cache per object type**:
+   → Each object type (e.g., struct inode) has its own **slab cache**
+   → Each slab cache manages memory in fixed-size **slabs** (usually a page or multiple pages)
+   → Each slab contains multiple **pre-initialized objects** of that type
+
+→ **Object lifecycle in a slab**:
+   → Slab starts empty → objects allocated → slab becomes partially full → then full
+   → Freed objects return to the slab → reused quickly without reinitialization
+
+→ **Pre-initialization**:
+   → Objects in slabs are **zeroed or pre-configured** when slab is created
+   → On allocation: object is used immediately without initialization overhead
+   → On free: object stays initialized, ready for next use (avoids destruction-reconstruction cycle)
+
+→ **Three slab states**:
+   → **Empty**: all objects are free
+   → **Partial**: some objects allocated
+   → **Full**: all objects in use
+   → Slabs are moved between per-state lists for tracking and reuse
+
+→ **Memory backend**:
+   → Slabs are obtained from a general allocator (e.g., page allocator or buddy allocator)
+   → Released when all objects in slab are free and slab is no longer needed
+
+→ **Slab allocator metadata**:
+   → Each slab stores a bitmap or freelist for tracking free objects
+   → Each cache may use CPU-local caches (per-CPU slabs) to minimize contention in SMP systems
+
+Output:
+- Constant-time allocation and deallocation for fixed-size objects
+- Objects always aligned and ready
+- No user-space involvement
+- High cache locality and performance
+
+Pathologies:
+→ **Cache overcommitment**: If many object types are cached simultaneously, total memory pressure increases
+→ **Slab bloat**: Unused objects may linger in partially filled slabs
+→ **No benefit for variable-sized or one-time allocations**
+→ **Requires kernel knowledge of object lifecycle and size in advance**
+
+Summary Flow:
+Kernel subsystem registers object type → allocator creates cache for that type → alloc() gets object from partial/full slab → free() returns object to slab → slab returned to system if empty → allocator maintains performance with per-CPU caches and pre-initialized pools
+

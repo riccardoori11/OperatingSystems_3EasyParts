@@ -1,0 +1,22 @@
+How can we design a scheduler to share the CPU in a proportional manner? What are the key mechanisms for doing so? How effective are they?
+
+Explain the lottery scheduling algorithm ?
+
+What are tickets used to represent for ?
+
+What would be a solution to the problem of multiple users having an equal amount of tickets but wanting to divide their own tickets differently among their jobs
+
+what is the name of the linx scheduling policy ?
+
+How does the CFS fairly divide the CPYU between all its competing processes ?
+
+What tension naturally occurs when thinking of the CFS algorithm?
+
+What are the two parameters used in the CFS algorithm to manage this aforementioned tension ?
+
+CFS keeps the running processes in a red black tree
+
+What happens to a job vruntime when it wakes up 
+
+
+

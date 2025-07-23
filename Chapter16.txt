@@ -1,0 +1,143 @@
+What problem does segmentation help resolve ?
+
+How does it function
+
+How does the OS know which segment is being reffered to
+
+What is external fragmentation
+
+Q1: What problem does segmentation aim to solve in memory virtualization?
+A1: Segmentation addresses the inefficiency of allocating an entire contiguous address space in physical memory, especially when large portions (e.g., between stack and heap) are unused. Base and bounds registers waste memory in sparse address spaces.
+
+Q2: What is segmentation?
+A2: Segmentation divides the address space into logical segments (e.g., code, heap, stack), each with its own base and bounds. Each segment can be independently placed in physical memory.
+
+Q3: What does a segment consist of?
+A3: A segment is a contiguous portion of memory with a starting base and a specific size (bounds). In canonical address spaces, common segments include:
+
+    Code (read-execute)
+
+    Heap (read-write)
+
+    Stack (read-write, grows downward)
+
+Q4: How does the hardware translate a virtual address to physical using segmentation?
+A4:
+
+    Identify the segment (via explicit or implicit method).
+
+    Extract the offset into the segment.
+
+    Check if offset < bounds.
+
+    Compute physical address: PhysAddr = Base[Segment] + Offset.
+
+Q5: What is a segmentation fault?
+A5: An exception raised when a memory access falls outside a segment’s bounds (illegal address).
+
+Q6: How does the system determine which segment an address refers to?
+A6:
+
+    Explicit approach: Use top bits of the virtual address as a segment selector.
+    Example: 14-bit VA with top 2 bits as segment ID, rest as offset.
+
+    Implicit approach: Infer from context (e.g., instruction fetch → code, stack pointer → stack).
+
+Q7: How is negative growth (e.g., the stack) handled?
+A7: Hardware tracks a “growth direction” bit. For negative growth (stack):
+
+    Compute offset as Offset = MaxSegmentSize - ActualOffset.
+
+    Bounds check uses absolute value.
+
+    Final address = Base + NegativeOffset.
+
+Q8: How does segmentation enable code sharing?
+A8: By assigning protection bits (read, write, execute) to segments, code segments can be set as read-execute only. This enables safe sharing across processes.
+
+Q9: What are protection bits in segmentation?
+A9: Bits that define permissible operations on a segment. Example:
+
+    Code: read-execute
+
+    Heap: read-write
+
+    Stack: read-write
+    If a process violates these permissions, the hardware raises an exception.
+
+Q10: What is the difference between coarse-grained and fine-grained segmentation?
+A10:
+
+    Coarse-grained: Few large segments (e.g., code, heap, stack).
+
+    Fine-grained: Many small segments (e.g., each function/data object gets its own segment), requiring segment tables and extra hardware.
+
+Q11: What is external fragmentation?
+A11: Free memory is scattered in non-contiguous chunks, making it hard to allocate large segments. It occurs due to variable-sized segments.
+
+Q12: How can external fragmentation be handled?
+A12:
+
+    Compaction: Move segments to consolidate free space (expensive).
+
+    Allocation algorithms: Best-fit, worst-fit, first-fit, buddy system (still suffer from fragmentation).
+
+Q13: What OS responsibilities arise with segmentation?
+A13:
+
+    Save/restore segment registers on context switch.
+
+    Handle growing/shrinking segments (e.g., heap via sbrk() or malloc()).
+
+    Manage physical memory to allocate space for segments and avoid fragmentation.
+
+Q14: What are the limitations of segmentation?
+A14:
+
+    External fragmentation
+
+    Fixed maximum segment size (e.g., limited by number of bits used for offset)
+
+    Inflexibility with large sparse segments (e.g., heap must be fully resident even if sparsely used)
+
+Q15: What is the role of sbrk() in segmentation?
+A15: sbrk() system call allows the heap to grow. The OS extends the heap segment and updates its size in the segment register.
+
+Q16: Why isn’t segmentation alone sufficient for fully sparse address spaces?
+A16: A large logical segment (e.g., heap) still requires a large contiguous block in physical memory. Sparse usage within that segment still leads to memory waste.
+
+
+Skeleton0: Segmentation (Memory Virtualization)
+
+Input:
+- Goal: Support large, sparse virtual address spaces efficiently
+- Constraint: Avoid wasting physical memory due to unused logical gaps (e.g., between heap and stack)
+- Previous method: Single base and bounds registers (per-process) — inflexible, leads to waste
+
+Mechanism:
+→ Divide virtual address space into logical *segments* (code, heap, stack)
+→ Each segment gets its own (base, bounds) pair
+→ Translation: Virtual address → segment selector + offset → base + offset → physical address
+→ Hardware checks: offset < bounds → legal; else → segmentation fault
+→ Stack-specific: grows downward → hardware includes growth-direction flag and computes offset as (max size – VA offset)
+→ Segment selector: Explicit (top bits of address) or implicit (based on context: PC, SP, etc.)
+→ Optional protection bits: R/W/X access enforcement for each segment
+→ Segment registers saved/restored on context switch
+→ Segments can be shared (e.g., read-only code across processes)
+→ Growing segments: OS handles via system call (e.g., sbrk for heap)
+
+Output:
+- Efficient support for sparse virtual address spaces
+- Physical memory only allocated to *used* portions of address space
+- Enables code sharing
+- Fast hardware-level address translation
+
+Pathologies:
+→ External fragmentation: scattered free memory blocks make segment allocation/growth difficult
+→ Compaction: solution but costly (move all segments + update registers)
+→ Address space limitations: fixed number of segments (coarse-grained); inflexible for dynamic, fine-grained use
+→ Segment size limits (e.g., with 2-bit selector → 4 segments max; each segment fixed to range)
+
+Summary Flow:
+Sparse address space → split into segments → assign base and bounds → translate VA via segment selector + offset → enforce bounds + access permissions → compact/allocate as needed → OS manages growth and context switch
+

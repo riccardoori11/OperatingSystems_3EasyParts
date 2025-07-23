@@ -1,0 +1,20 @@
+What are the two types of memory that are allocated
+
+Why is the programmer sometimes called the automatic memory ?
+
+Who deals with short lived memory and who deals with long lived memory?
+
+int *x = (int *) malloc(sizeof(int));
+Explain this code
+Explain where it is stored
+
+Why is sizeof() a oeprator and not a function call
+
+// In space.c why does it return those values
+
+What is a buffer overflow, dangling pointer and a memory leak
+
+START USING PURIFY AND VALGRIND
+
+
+DO THE HW AT THE END 

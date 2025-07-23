@@ -1,0 +1,86 @@
+what is the central mechanism used to virtualize memory
+→ hardware-based address translation
+
+why is address translation necessary
+→ to give each process an isolated, contiguous virtual address space while the physical memory is shared and fragmented
+
+How would we view the assembly version of the code
+- using obdjump
+
+how is memory access redirected in this model
+→ by adding the base register to every virtual address to compute the physical address
+
+why is the bounds register needed
+→ to check whether the virtual address is within the allowed range and prevent illegal memory access
+
+what happens when a process accesses memory outside its bounds
+→ the CPU raises an exception and control is transferred to the OS to handle the fault
+
+how is isolation enforced in address translation
+→ bounds checking ensures each process can only access memory within its assigned region
+
+why is this called dynamic relocation
+→ because the base can be changed at runtime, allowing a process to be moved in physical memory without changing its code
+
+why does address translation create an illusion
+→ because processes think their memory starts at 0 while physically it may be elsewhere
+
+what is the OS's role in setting up address translation
+→ it allocates physical memory, sets base/bounds registers on context switch, and handles faults
+
+why can’t hardware alone implement memory virtualization
+→ because it lacks policy and memory tracking; only the OS can manage allocation and protection decisions
+
+what assumptions simplify the early model
+→ address space size is fixed, smaller than physical memory, and contiguous
+
+what is the downside of requiring contiguous allocation
+→ internal fragmentation and poor memory utilization
+
+what happens during instruction execution under base/bounds
+→ virtual address is checked against bounds, then base is added to compute physical address
+
+what structures are required per cpu for this mechanism
+→ base register, bounds register, and MMU circuitry for translation and validation
+
+how does the cpu switch from user to kernel mode
+→ on traps, interrupts, or illegal access; a mode bit is flipped and control jumps to a handler
+
+why must instructions to set base/bounds be privileged
+→ to prevent user programs from gaining unauthorized access to other memory regions
+
+how is context switching handled under base/bounds
+→ OS saves current base/bounds, loads new process's values, and resumes execution
+
+how does the OS allocate memory for new processes
+→ using a free list of available physical regions
+
+how does the OS reclaim memory on process exit
+→ it adds the region back to the free list and removes process metadata
+
+how can a process be moved in memory
+→ deschedule, copy its address space to a new location, update its base register, then resume
+
+how are exceptions handled
+→ hardware traps to kernel; OS runs fault handler, often terminating the offending process
+
+what is internal fragmentation in this context
+→ wasted memory within a fixed-sized allocated slot due to unused stack/heap space
+
+why can internal fragmentation be severe in this model
+→ because entire slots are reserved regardless of how much is actually used
+
+what must the OS initialize at boot to support LDE with address translation
+→ trap table, interrupt handlers, process table, free list, and timer
+
+why is base/bounds efficient but limited
+→ fast translation and protection with minimal hardware, but inflexible due to fixed contiguous allocation
+
+what is the next step after base/bounds to reduce fragmentation
+→ segmentation (discussed in next chapter)
+
+how does address translation tie into limited direct execution
+→ OS sets up base/bounds, then hardware transparently enforces translation and protection during execution
+
+what is the epistemic role of address translation in system control
+→ it enforces a causal boundary between processes and physical memory, preserving the OS’s monopoly on resource access and interruptibility

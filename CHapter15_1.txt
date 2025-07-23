@@ -1,0 +1,67 @@
+What is the name of the tecnhique of virtualizing memory ?
+
+What does it essentially do?
+
+How does the OS translate the virtual memory to a physical one ?
+
+What is the bound register used for ?
+
+What happens when a process generates a virtual address greater than the bounds ?
+
+What is the free list used for ?
+
+
+Skeleton0: Limited Direct Execution (Dynamic Relocation) Runtime Flow
+
+Input:
+→ CPU is booted
+→ OS is in control (kernel mode)
+→ Ready queue contains Process A and Process B
+
+Phase 1: Start Process A
+→ OS allocates PCB for A
+→ OS allocates physical memory for A
+→ OS sets base/bounds registers for A
+→ OS performs return-from-trap → transfers control to A
+
+→ Hardware restores A’s registers
+→ Hardware switches to user mode
+→ Hardware jumps to A’s PC
+
+→ A executes instruction
+→ Hardware fetches instruction → translate VA → fetch from PA
+→ If load/store: check bounds → translate VA → access PA
+→ A continues running
+
+Phase 2: Timer Interrupt Triggers
+→ Timer fires → hardware switches to kernel mode → jump to interrupt handler
+
+→ OS handler decides: stop A, run B
+→ OS calls switch()
+→ Save A’s registers to PCB(A) (including base/bounds)
+→ Load B’s registers from PCB(B) (including base/bounds)
+→ return-from-trap into B
+
+→ Hardware restores B’s registers
+→ Hardware switches to user mode
+→ Hardware jumps to B’s PC
+
+→ B executes bad load (out-of-bounds)
+→ Hardware detects fault → switches to kernel mode → jumps to trap handler
+
+→ OS trap handler executes:
+   → decides to terminate B
+   → deallocates B’s memory
+   → removes B’s PCB entry
+
+Output:
+→ A was scheduled and ran
+→ Context switched to B
+→ B violated memory bounds
+→ OS trapped and killed B
+→ Memory is reclaimed
+
+
+What is internal fragmentation?
+
+
