@@ -1,0 +1,17 @@
+What is the concept of paging relate it to segmentation?
+
+What is the page table
+
+What are the two components that the virtual address gets split into
+
+What is considered the VPN and the offset if the page was 16 bytes
+
+What is a linear page table
+
+1024 movl $0x0,(%edi,%eax,4)
+1028 incl %eax
+1032 cmpl $0x03e8,%eax
+1036 jne 1024
+What does this assembly code do
+
+

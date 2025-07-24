@@ -1,0 +1,36 @@
+What is the problem with using bigger pages
+
+WHat dose the page directory tell you
+
+VPN = (VirtualAddress & VPN_MASK) >> SHIFT
+2 (Success, TlbEntry) = TLB_Lookup(VPN)
+3 if (Success == True) // TLB Hit
+4 if (CanAccess(TlbEntry.ProtectBits) == True)
+5 Offset = VirtualAddress & OFFSET_MASK
+6 PhysAddr = (TlbEntry.PFN << SHIFT) | Offset
+7 Register = AccessMemory(PhysAddr)
+8 else
+9 RaiseException(PROTECTION_FAULT)
+10 else // TLB Miss
+11 // first, get page directory entry
+12 PDIndex = (VPN & PD_MASK) >> PD_SHIFT
+13 PDEAddr = PDBR + (PDIndex * sizeof(PDE))
+14 PDE = AccessMemory(PDEAddr)
+15 if (PDE.Valid == False)
+16 RaiseException(SEGMENTATION_FAULT)
+17 else
+18 // PDE is valid: now fetch PTE from page table
+19 PTIndex = (VPN & PT_MASK) >> PT_SHIFT
+20 PTEAddr = (PDE.PFN<<SHIFT) + (PTIndex*sizeof(PTE))
+21 PTE = AccessMemory(PTEAddr)
+22 if (PTE.Valid == False)
+23 RaiseException(SEGMENTATION_FAULT)
+24 else if (CanAccess(PTE.ProtectBits) == False)
+25 RaiseException(PROTECTION_FAULT)
+26 else
+27 TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits)
+28 RetryInstruction()
+
+
+
+

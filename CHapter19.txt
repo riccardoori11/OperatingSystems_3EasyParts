@@ -1,0 +1,59 @@
+How can we speed up address translation, and generally avoid the
+extra memory reference that paging seems to require? What hardware
+support is required? What OS involvement is needed?
+
+What is the MMU 
+
+What is the TLB
+
+Main mechanisms of TLB 
+-> VPN found in TLB fast access if not fall back and update TLB
+
+VPN = (VirtualAddress & VPN_MASK) >> SHIFT
+2 (Success, TlbEntry) = TLB_Lookup(VPN)
+3 if (Success == True) // TLB Hit
+4 if (CanAccess(TlbEntry.ProtectBits) == True)
+5 Offset = VirtualAddress & OFFSET_MASK
+6 PhysAddr = (TlbEntry.PFN << SHIFT) | Offset
+7 Register = AccessMemory(PhysAddr)
+8 else
+9 RaiseException(PROTECTION_FAULT)
+10 else // TLB Miss
+11 PTEAddr = PTBR + (VPN * sizeof(PTE))
+12 PTE = AccessMemory(PTEAddr)
+13 if (PTE.Valid == False)
+14 RaiseException(SEGMENTATION_FAULT)
+15 else if (CanAccess(PTE.ProtectBits) == False)
+16 RaiseException(PROTECTION_FAULT)
+17 else
+18 TLB_Insert(VPN, PTE.PFN, PTE.ProtectBits)
+19 RetryInstruction()
+
+Explain the codeVPN = (VirtualAddress & VPN_MASK) >> SHIFT
+
+int i, sum = 0;
+for (i = 0; i < 10; i++) {
+sum += a[i];
+}
+For each loop, tell me if it was a hit or a miss
+assume we have an array of 10 4-byte integers in memory,
+starting at virtual address 100. Assume further that we have a small 8-bit
+virtual address space, with 16-byte pages
+
+What is temporal and spatial locality ?
+
+Caching is the process of storing a copy of data in a faster, smaller storage layer (e.g., CPU cache, disk cache) so that future accesses to that data are quicker.
+
+What is the difference between teh valid bits found in a TLB and that found in a page table
+
+When context-switching between processes, the translations in the TLB
+for the last process are not meaningful to the about-to-be-run process.
+What should the hardware or OS do in order to solve this problem?
+
+What issue does ASID resolve
+
+hich TLB entry should be replaced when we add a new TLB entry?
+The goal, of course, being to minimize the miss rate (or increase hit rate)
+and thus improve performance.
+
+

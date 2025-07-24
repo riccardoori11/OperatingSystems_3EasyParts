@@ -1,0 +1,26 @@
+How can the OS decide which page (or pages) to evict from memory?
+This decision is made by the replacement policy of the system, which usu-
+ally follows some general principles (discussed below) but also includes
+certain tweaks to avoid corner-case behaviors.
+
+What does the AMAT metric indicate
+
+What is the optimal policy
+
+What are teh Three C's
+
+Why is the optimal policy not implemented and only used as a metric
+
+What were the 3 policies discussed
+
+CRUX: HOW TO IMPLEMENT AN LRU REPLACEMENT POLICY
+Given that it will be expensive to implement perfect LRU, can we ap-
+proximate it in some way, and still obtain the desired behavior?
+
+What is the page selection policy
+
+What is prefetching
+
+What is clustering
+
+What is thrashing
